@@ -12,6 +12,7 @@ function wah(func, callback) {
     callback = err => {
       if (err) {
         console.error(err);
+        return;
       }
     };
   }
@@ -71,7 +72,7 @@ async function main() {
 
     const rtid = tweet.id_str;
     const ttid = tweet.quoted_status_id_str;
-    const rturl = `https://twitter.com/${tweet.user.id_str}/status/${tweet.id_str}`;
+    const rturl = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`;
 
     let exists = true;
     try {
@@ -105,7 +106,7 @@ async function main() {
         in_reply_to_status_id: rtid,
       });
     } else {
-      // success.
+      // the first tweet
       await twitterClient.post('statuses/retweet/:id', {
         id: rtid,
       });
