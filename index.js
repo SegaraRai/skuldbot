@@ -116,7 +116,11 @@ async function main() {
 
 main()
   .then(() => {
-    console.log('running...');
+    console.log('started');
+
+    setInterval(() => {
+      console.log('running...');
+    }, 20 * 60 * 1000);
   })
   .catch(err => {
     throw err;
