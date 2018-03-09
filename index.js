@@ -85,8 +85,7 @@ async function main() {
       exists = false;
     } catch(error) {
       if (error.code !== 11000) {
-        console.error(error);
-        return;
+        throw error;
       }
     }
 
@@ -97,8 +96,7 @@ async function main() {
       });
 
       if (!document) {
-        console.error(`insertion failed but collection does not exist\nrtid: ${rtid}, ttid: ${ttid}`);
-        return;
+        throw new Error(`insertion failed but collection does not exist\nrtid: ${rtid}, ttid: ${ttid}`);
       }
 
       await twitterClient.post('statuses/update', {
