@@ -99,10 +99,12 @@ async function main() {
         throw new Error(`insertion failed but collection does not exist\nrtid: ${rtid}, ttid: ${ttid}`);
       }
 
-      await twitterClient.post('statuses/update', {
-        status: `${ALREADY_EXISTS}\n${document.rturl}`,
-        in_reply_to_status_id: rtid,
-      });
+      setTimeout(wah(async () => {
+        await twitterClient.post('statuses/update', {
+          status: `${ALREADY_EXISTS}\n${document.rturl}`,
+          in_reply_to_status_id: rtid,
+        });
+      }), 40);
     } else {
       // the first tweet
       await twitterClient.post('statuses/retweet/:id', {
