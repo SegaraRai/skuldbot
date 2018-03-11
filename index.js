@@ -2,6 +2,8 @@ const wah = require('./lib/wah');
 
 
 async function main() {
+  console.dir(process.versions, {depth: 10});
+
   // initialize
   for (const file of [
     './lib/mongoClient',
@@ -29,6 +31,7 @@ async function main() {
 
 wah(main, err => {
   if (err) {
+    console.error(err);
     throw err;
   }
 
