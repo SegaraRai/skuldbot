@@ -71,6 +71,7 @@ async function main() {
     }
 
     const rtid = tweet.id_str;
+    const rtsn = tweet.user.screen_name;
     const ttid = tweet.quoted_status_id_str;
     const rturl = `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`;
 
@@ -99,12 +100,10 @@ async function main() {
         throw new Error(`insertion failed but collection does not exist\nrtid: ${rtid}, ttid: ${ttid}`);
       }
 
-      setTimeout(wah(async () => {
-        await twitterClient.post('statuses/update', {
-          status: `${ALREADY_EXISTS}\n${document.rturl}`,
-          in_reply_to_status_id: rtid,
-        });
-      }), 40);
+      await twitterClient.post('statuses/update', {
+        status: `@${rtsn} ${ALREADY_EXISTS}\n${document.rturl}`,
+        in_reply_to_status_id: rtid,
+      });
     } else {
       // the first tweet
       await twitterClient.post('statuses/retweet/:id', {
