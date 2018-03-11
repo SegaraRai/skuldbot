@@ -83,9 +83,9 @@ async function main() {
         tweet,
       });
       exists = false;
-    } catch(error) {
-      if (error.code !== 11000) {
-        throw error;
+    } catch(err) {
+      if (err.code !== 11000) {
+        throw err;
       }
     }
 
