@@ -3,7 +3,7 @@ const wah = require('./lib/wah');
 const twitterClient = require('./lib/twitterClient');
 const {database} = require('./lib/mongoClient');
 
-const collection = database.collection(config.gacha.MONGODB_COLLECTION);
+const collection = database.collection(config.gacha.mongodbCollection);
 const skuldFriends = new Set();
 
 
@@ -11,7 +11,7 @@ async function fetchSkuldFriends() {
   skuldFriends.clear();
   for (let cursor = '-1'; cursor !== '0';) {
     const {data} = await twitterClient.get('friends/ids', {
-      user_id: config.SKULD_USER_ID,
+      user_id: config.skuldUserId,
       cursor,
       stringify_ids: true,
       count: 5000,
@@ -25,10 +25,10 @@ async function fetchSkuldFriends() {
 
 async function main() {
   await fetchSkuldFriends();
-  setInterval(wah(fetchSkuldFriends), config.gacha.FETCH_FRIENDS_INTERVAL);
+  setInterval(wah(fetchSkuldFriends), config.gacha.fetchFriendsInterval);
 
   const stream = twitterClient.stream('statuses/filter', {
-    track: config.gacha.TRACK_URL,
+    track: config.gacha.trackUrl,
   });
 
   stream.on('error', err => {
@@ -37,12 +37,12 @@ async function main() {
 
   stream.on('tweet', wah(async tweet => {
     // exclude own tweets
-    if (config.gacha.EXCLUDE_OWN_TWEETS && tweet.user.id_str === config.MY_USER_ID) {
+    if (config.gacha.excludeOwnTweets && tweet.user.id_str === config.myUserId) {
       return;
     }
 
     // exclude skuld's tweets
-    if (tweet.user.id_str === config.SKULD_USER_ID) {
+    if (tweet.user.id_str === config.skuldUserId) {
       return;
     }
 
@@ -53,7 +53,7 @@ async function main() {
 
     // exclude etc.
     const entities = tweet.extended_tweet ? tweet.extended_tweet.entities : tweet.entities;
-    if (!entities || !entities.urls || !entities.urls.some(url => url.expanded_url.includes(config.gacha.TRACK_URL))) {
+    if (!entities || !entities.urls || !entities.urls.some(url => url.expanded_url.includes(config.gacha.trackUrl))) {
       return;
     }
 
@@ -88,7 +88,7 @@ async function main() {
           type: 'message_create',
           message_create: {
             target: {
-              recipient_id: config.SKULD_USER_ID,
+              recipient_id: config.skuldUserId,
             },
             message_data: {
               text: rturl,

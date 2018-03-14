@@ -3,12 +3,12 @@ const wah = require('./lib/wah');
 const twitterClient = require('./lib/twitterClient');
 const {database} = require('./lib/mongoClient');
 
-const collection = database.collection(config.tag.MONGODB_COLLECTION);
+const collection = database.collection(config.tag.mongodbCollection);
 
 
 async function main() {
   const stream = twitterClient.stream('statuses/filter', {
-    track: config.tag.TRACK_TEXT,
+    track: config.tag.trackText,
   });
 
   stream.on('error', err => {
@@ -17,7 +17,7 @@ async function main() {
 
   stream.on('tweet', wah(async tweet => {
     // exclude own tweets
-    if (config.tag.EXCLUDE_OWN_TWEETS && tweet.user.id_str === config.MY_USER_ID) {
+    if (config.tag.excludeOwnTweets && tweet.user.id_str === config.myUserId) {
       return;
     }
 
@@ -27,12 +27,12 @@ async function main() {
     }
 
     // exclude non-quote tweets
-    if (!tweet.quoted_status || tweet.quoted_status.user.id_str !== config.SKULD_USER_ID) {
+    if (!tweet.quoted_status || tweet.quoted_status.user.id_str !== config.skuldUserId) {
       return;
     }
 
     // exclude etc.
-    if (!tweet.text.includes(config.tag.TRACK_TEXT)) {
+    if (!tweet.text.includes(config.tag.trackText)) {
       return;
     }
 
@@ -67,7 +67,7 @@ async function main() {
       }
 
       await twitterClient.post('statuses/update', {
-        status: config.tag.CREATE_STATUS(rtsn, document.rturl),
+        status: config.tag.createStatus(rtsn, document.rturl),
         in_reply_to_status_id: rtid,
       });
     } else {
