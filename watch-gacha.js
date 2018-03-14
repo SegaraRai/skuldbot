@@ -7,8 +7,7 @@ const collection = database.collection(config.gacha.MONGODB_COLLECTION);
 const skuldFriends = new Set();
 
 
-async function main() {
-  // list and store friends of skuld
+async function fetchSkuldFriends() {
   skuldFriends.clear();
   for (let cursor = '-1'; cursor !== '0';) {
     const {data} = await twitterClient.get('friends/ids', {
@@ -22,6 +21,11 @@ async function main() {
     }
     cursor = data.next_cursor_str;
   }
+}
+
+async function main() {
+  await fetchSkuldFriends();
+  setInterval(wah(fetchSkuldFriends), config.gacha.FETCH_FRIENDS_INTERVAL);
 
   const stream = twitterClient.stream('statuses/filter', {
     track: config.gacha.TRACK_URL,
