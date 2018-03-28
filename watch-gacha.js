@@ -8,7 +8,7 @@ const skuldFriends = new Set();
 
 
 async function fetchSkuldFriends() {
-  skuldFriends.clear();
+  const tempFriendIds = [];
   for (let cursor = '-1'; cursor !== '0';) {
     const {data} = await twitterClient.get('friends/ids', {
       user_id: config.skuldUserId,
@@ -16,10 +16,12 @@ async function fetchSkuldFriends() {
       stringify_ids: true,
       count: 5000,
     });
-    for (const id of data.ids) {
-      skuldFriends.add(id);
-    }
+    tempFriendIds.push(...data.ids);
     cursor = data.next_cursor_str;
+  }
+  skuldFriends.clear();
+  for (const id of tempFriendIds) {
+    skuldFriends.add(id);
   }
 }
 
